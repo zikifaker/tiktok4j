@@ -1,0 +1,48 @@
+server:
+  port: 5000
+
+logging:
+  level:
+    root: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tiktok
+    username:
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 1
+  mvc:
+    servlet:
+      path: /douyin
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    # dev
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # prod
+    # log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+jwt:
+  secret-key: your-jwt-secret-key
+  expire-days: 30
+
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: pg_tiktok
+
+aliyun:
+  oss:
+    region: cn-shanghai
+    endpoint: oss-cn-shanghai.aliyuncs.com
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    role-arn:
+    bucket-name: tiktok4j

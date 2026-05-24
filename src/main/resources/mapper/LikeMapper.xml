@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.zikifaker.tiktok4j.mapper.LikeMapper">
+    <insert id="upsertLike">
+        INSERT INTO likes (user_id, video_id, cancel)
+        VALUES (#{userId}, #{videoId}, #{cancel}) ON DUPLICATE KEY
+        UPDATE cancel = #{cancel}
+    </insert>
+</mapper>

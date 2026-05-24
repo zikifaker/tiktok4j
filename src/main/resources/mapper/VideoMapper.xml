@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.zikifaker.tiktok4j.mapper.VideoMapper">
+    <select id="getVideosByLastTime" resultType="com.github.zikifaker.tiktok4j.entity.Video">
+        SELECT *
+        FROM videos
+        WHERE publish_time &lt; #{lastTime}
+        ORDER BY publish_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="saveVideo" parameterType="com.github.zikifaker.tiktok4j.entity.Video">
+        INSERT INTO videos (author_id, source_url, play_url, cover_url, publish_time, title)
+        VALUES (#{authorId}, #{sourceURL}, #{playURL}, #{coverURL}, #{publishTime}, #{title})
+    </insert>
+</mapper>
