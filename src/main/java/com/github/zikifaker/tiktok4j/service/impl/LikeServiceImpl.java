@@ -1,6 +1,7 @@
 package com.github.zikifaker.tiktok4j.service.impl;
 
 import com.github.zikifaker.tiktok4j.consts.LikeActionType;
+import com.github.zikifaker.tiktok4j.consts.MQConstants;
 import com.github.zikifaker.tiktok4j.consts.RedisKeys;
 import com.github.zikifaker.tiktok4j.mapper.LikeMapper;
 import com.github.zikifaker.tiktok4j.mq.message.ToggleLikeMessage;
@@ -27,8 +28,6 @@ public class LikeServiceImpl implements LikeService {
     private LikeMapper likeMapper;
 
     private static final int CACHE_EXPIRE_DAYS = 30;
-
-    private static final String TOGGLE_LIKE_TOPIC = "tiktok_like_toggle_topic";
 
     @Autowired
     public LikeServiceImpl(
@@ -188,15 +187,30 @@ public class LikeServiceImpl implements LikeService {
             Long videoId,
             LikeActionType actionType
     ) {
-        ToggleLikeMessage message = new ToggleLikeMessage(userId, videoId, actionType.name());
-        mqService.asyncSend(TOGGLE_LIKE_TOPIC, message, new SendCallback() {
+        ToggleLikeMessage message = new ToggleLikeMessage(
+                userId,
+                videoId,
+                actionType.name()
+        );
+        String destination = String.format("%s:%s", MQConstants.TOPIC_TOGGLE_LIKE, MQConstants.TAG_TOGGLE);
+        mqService.asyncSend(destination, message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
+                log.info("Sent toggle like message: userId={}, videoId={}, action={}",
+                        userId,
+                        videoId,
+                        actionType
+                );
             }
 
             @Override
             public void onException(Throwable e) {
-                log.error("Failed to send toggle like message: {}", e.getMessage());
+                log.error("Failed to send toggle like message: userId={}, videoId={}, action={}",
+                        userId,
+                        videoId,
+                        actionType,
+                        e
+                );
             }
         });
     }
