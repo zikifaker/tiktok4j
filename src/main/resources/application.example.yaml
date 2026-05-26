@@ -22,12 +22,10 @@ spring:
       path: /douyin
 
 mybatis:
+  mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
-    # dev
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    # prod
-    # log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 jwt:
   secret-key: your-jwt-secret-key

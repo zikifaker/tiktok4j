@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/like")
 @Slf4j
+@RestController
+@RequestMapping("/like")
 public class LikeController {
     private LikeService likeService;
 
@@ -24,7 +26,7 @@ public class LikeController {
         this.likeService = likeService;
     }
 
-    @PostMapping("/toggle")
+    @PostMapping()
     public ResponseEntity<ToggleLikeResp> toggleLike(
             @RequestParam("video_id") Long videoId,
             @RequestParam("action_type") LikeActionType actionType,
