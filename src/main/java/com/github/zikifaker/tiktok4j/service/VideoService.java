@@ -14,4 +14,6 @@ public interface VideoService {
     Long getWorkCount(Long userId);
 
     List<VideoBO> getUserVideos(Long userId);
+
+    List<VideoBO> getUserLikeVideos(Long currentUserId, Long targetUserId);
 }

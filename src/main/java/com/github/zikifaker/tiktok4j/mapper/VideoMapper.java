@@ -19,4 +19,6 @@ public interface VideoMapper {
 
     @Select("SELECT * FROM videos WHERE author_id = #{userId}")
     List<Video> getUserVideos(Long userId);
+
+    List<Video> getVideosByIds(@Param("ids") List<Long> ids);
 }

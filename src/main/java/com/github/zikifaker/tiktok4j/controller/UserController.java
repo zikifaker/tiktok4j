@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserRegisterResp> UserRegister(@RequestBody UserRegisterReq req) {
+    public ResponseEntity<UserRegisterResp> register(@RequestBody UserRegisterReq req) {
         String username = req.getUsername();
         String password = req.getPassword();
 
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResp> UserLogin(@RequestBody UserLoginReq req) {
+    public ResponseEntity<UserLoginResp> login(@RequestBody UserLoginReq req) {
         String username = req.getUsername();
         String password = req.getPassword();
 
@@ -84,7 +84,7 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<UserInfoResp> UserInfo(@RequestParam("user_id") Long userId, HttpServletRequest request) {
+    public ResponseEntity<UserInfoResp> getInfo(@RequestParam("user_id") Long userId, HttpServletRequest request) {
         Long curUserId = (Long) request.getAttribute(ContextKeys.USER_ID);
         UserInfoBO userInfoBO = userService.getUserInfo(curUserId, userId);
         UserInfoResp respBody = UserInfoResp.builder()

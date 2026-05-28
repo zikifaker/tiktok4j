@@ -2,8 +2,10 @@ package com.github.zikifaker.tiktok4j.service.impl;
 
 import com.github.zikifaker.tiktok4j.bo.PublishVideoBO;
 import com.github.zikifaker.tiktok4j.bo.VideoBO;
+import com.github.zikifaker.tiktok4j.consts.RedisKeys;
 import com.github.zikifaker.tiktok4j.entity.User;
 import com.github.zikifaker.tiktok4j.entity.Video;
+import com.github.zikifaker.tiktok4j.mapper.LikeMapper;
 import com.github.zikifaker.tiktok4j.mapper.UserMapper;
 import com.github.zikifaker.tiktok4j.mapper.VideoMapper;
 import com.github.zikifaker.tiktok4j.service.CommentService;
@@ -12,6 +14,7 @@ import com.github.zikifaker.tiktok4j.service.VideoService;
 import com.github.zikifaker.tiktok4j.utils.VideoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -19,21 +22,29 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class VideoServiceImpl implements VideoService {
     private static final int VIDEO_FEED_LIMIT = 30;
 
+    private static final int CACHE_EXPIRE_DAYS = 30;
+
     private VideoMapper videoMapper;
 
     private UserMapper userMapper;
 
+    private LikeMapper likeMapper;
+
     private LikeService likeService;
 
     private CommentService commentService;
+
+    private StringRedisTemplate cacheService;
 
     private Executor threadPool;
 
@@ -42,15 +53,19 @@ public class VideoServiceImpl implements VideoService {
     public VideoServiceImpl(
             VideoMapper videoMapper,
             UserMapper userMapper,
+            LikeMapper likeMapper,
             LikeService likeService,
             CommentService commentService,
+            StringRedisTemplate cacheService,
             @Qualifier("videoTaskExecutor") Executor threadPool,
             VideoUtils videoUtils
     ) {
         this.videoMapper = videoMapper;
         this.userMapper = userMapper;
+        this.likeMapper = likeMapper;
         this.likeService = likeService;
         this.commentService = commentService;
+        this.cacheService = cacheService;
         this.threadPool = threadPool;
         this.videoUtils = videoUtils;
     }
@@ -166,6 +181,41 @@ public class VideoServiceImpl implements VideoService {
         List<Video> videos = videoMapper.getUserVideos(userId);
         return videos.stream()
                 .map(video -> buildVideoBO(video, userId))
+                .toList();
+    }
+
+    @Override
+    public List<VideoBO> getUserLikeVideos(Long currentUserId, Long targetUserId) {
+        String userLikeVideosKey = String.format(RedisKeys.USER_LIKE_VIDEOS, targetUserId);
+        Boolean exists = cacheService.hasKey(userLikeVideosKey);
+        Set<String> videoIdStrs;
+
+        // 查询用户点赞视频 id 缓存，若未命中访问数据库
+        if (Boolean.TRUE.equals(exists)) {
+            videoIdStrs = cacheService.opsForSet().members(userLikeVideosKey);
+        } else {
+            List<Long> videoIds = likeMapper.getLikeVideoIds(targetUserId);
+            if (videoIds.isEmpty()) {
+                return List.of();
+            }
+            String[] ids = videoIds.stream()
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(userLikeVideosKey, ids);
+            videoIdStrs = cacheService.opsForSet().members(userLikeVideosKey);
+        }
+
+        if (videoIdStrs == null || videoIdStrs.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> ids = videoIdStrs.stream()
+                .map(Long::valueOf)
+                .toList();
+        List<Video> videos = videoMapper.getVideosByIds(ids);
+        return videos.stream()
+                .map(video -> buildVideoBO(video, currentUserId))
                 .toList();
     }
 }

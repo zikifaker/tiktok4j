@@ -13,4 +13,13 @@
         INSERT INTO videos (author_id, source_url, play_url, cover_url, publish_time, title)
         VALUES (#{authorId}, #{sourceURL}, #{playURL}, #{coverURL}, #{publishTime}, #{title})
     </insert>
+
+    <select id="getVideosByIds" resultType="com.github.zikifaker.tiktok4j.entity.Video">
+        SELECT *
+        FROM videos
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>
