@@ -4,7 +4,7 @@ import com.github.zikifaker.tiktok4j.consts.ContextKeys;
 import com.github.zikifaker.tiktok4j.dto.resp.GetPublishTokenResp;
 import com.github.zikifaker.tiktok4j.service.STSService;
 import com.github.zikifaker.tiktok4j.bo.GetPublishTokenBO;
-import com.github.zikifaker.tiktok4j.consts.BaseResponse;
+import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 

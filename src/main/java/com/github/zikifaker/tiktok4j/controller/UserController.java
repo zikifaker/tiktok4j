@@ -1,7 +1,7 @@
 package com.github.zikifaker.tiktok4j.controller;
 
 import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
-import com.github.zikifaker.tiktok4j.consts.BaseResponse;
+import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import com.github.zikifaker.tiktok4j.consts.ContextKeys;
 import com.github.zikifaker.tiktok4j.dto.req.UserLoginReq;
 import com.github.zikifaker.tiktok4j.dto.req.UserRegisterReq;

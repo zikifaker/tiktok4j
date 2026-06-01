@@ -1,4 +1,4 @@
-package com.github.zikifaker.tiktok4j.consts;
+package com.github.zikifaker.tiktok4j.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.github.zikifaker.tiktok4j.service;
 
-import com.github.zikifaker.tiktok4j.consts.LikeActionType;
+import com.github.zikifaker.tiktok4j.enums.LikeActionType;
 
 public interface LikeService {
     // 获取视频点赞数

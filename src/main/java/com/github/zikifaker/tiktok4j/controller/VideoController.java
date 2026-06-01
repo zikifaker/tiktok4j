@@ -2,7 +2,7 @@ package com.github.zikifaker.tiktok4j.controller;
 
 import com.github.zikifaker.tiktok4j.bo.PublishVideoBO;
 import com.github.zikifaker.tiktok4j.bo.VideoBO;
-import com.github.zikifaker.tiktok4j.consts.BaseResponse;
+import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import com.github.zikifaker.tiktok4j.consts.ContextKeys;
 import com.github.zikifaker.tiktok4j.dto.resp.FeedResp;
 import com.github.zikifaker.tiktok4j.dto.resp.GetPublishListResp;

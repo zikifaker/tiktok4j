@@ -1,8 +1,8 @@
 package com.github.zikifaker.tiktok4j.controller;
 
-import com.github.zikifaker.tiktok4j.consts.BaseResponse;
+import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import com.github.zikifaker.tiktok4j.consts.ContextKeys;
-import com.github.zikifaker.tiktok4j.consts.LikeActionType;
+import com.github.zikifaker.tiktok4j.enums.LikeActionType;
 import com.github.zikifaker.tiktok4j.dto.resp.GetLikeListResp;
 import com.github.zikifaker.tiktok4j.dto.resp.ToggleLikeResp;
 import com.github.zikifaker.tiktok4j.service.LikeService;

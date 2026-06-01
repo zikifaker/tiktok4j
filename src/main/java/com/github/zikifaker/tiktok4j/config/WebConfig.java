@@ -1,7 +1,7 @@
 package com.github.zikifaker.tiktok4j.config;
 
 import com.github.zikifaker.tiktok4j.interceptor.AuthInterceptor;
-import com.github.zikifaker.tiktok4j.utils.LikeActionTypeConverter;
+import com.github.zikifaker.tiktok4j.utils.ActionTypeConverterFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -30,6 +30,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new LikeActionTypeConverter());
+        registry.addConverterFactory(new ActionTypeConverterFactory());
     }
 }

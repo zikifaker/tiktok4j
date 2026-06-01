@@ -1,6 +1,6 @@
 package com.github.zikifaker.tiktok4j.mq.consumer;
 
-import com.github.zikifaker.tiktok4j.consts.LikeActionType;
+import com.github.zikifaker.tiktok4j.enums.LikeActionType;
 import com.github.zikifaker.tiktok4j.consts.MQConstants;
 import com.github.zikifaker.tiktok4j.mapper.LikeMapper;
 import com.github.zikifaker.tiktok4j.mq.message.ToggleLikeMessage;
