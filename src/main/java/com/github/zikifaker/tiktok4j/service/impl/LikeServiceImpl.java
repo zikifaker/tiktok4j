@@ -102,14 +102,8 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public void toggleLike(Long userId, Long videoId, LikeActionType type) {
         switch (type) {
-            case LIKE:
-                doLike(userId, videoId);
-                break;
-            case UNLIKE:
-                doUnlike(userId, videoId);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid LikeActionType: " + type);
+            case LIKE -> doLike(userId, videoId);
+            case UNLIKE -> doUnlike(userId, videoId);
         }
     }
 
@@ -192,7 +186,7 @@ public class LikeServiceImpl implements LikeService {
                 videoId,
                 actionType.name()
         );
-        String destination = String.format("%s:%s", MQConstants.TOPIC_TOGGLE_LIKE, MQConstants.TAG_TOGGLE);
+        String destination = String.format("%s:%s", MQConstants.TOPIC_TIKTOK_LIKE, MQConstants.TAG_TOGGLE);
         mqService.asyncSend(destination, message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
@@ -205,11 +199,11 @@ public class LikeServiceImpl implements LikeService {
 
             @Override
             public void onException(Throwable e) {
-                log.error("Failed to send toggle like message: userId={}, videoId={}, action={}",
+                log.error("Failed to send toggle like message: userId={}, videoId={}, action={}, error={}",
                         userId,
                         videoId,
                         actionType,
-                        e
+                        e.getMessage()
                 );
             }
         });

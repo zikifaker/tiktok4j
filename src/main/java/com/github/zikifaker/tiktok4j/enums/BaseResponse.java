@@ -17,7 +17,9 @@ public enum BaseResponse {
     GET_PUBLISH_TOKEN_ERROR(300, "Get publish token error"),
 
     TOGGLE_LIKE_ERROR(400, "Toggle like error"),
-    GET_LIKE_LIST_ERROR(401, "Get like list error");
+    GET_LIKE_LIST_ERROR(401, "Get like list error"),
+
+    HANDLE_COMMENT_ERROR(500, "Handle comment error");
 
     private final Integer code;
     private final String message;

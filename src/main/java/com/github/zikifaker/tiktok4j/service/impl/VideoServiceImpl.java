@@ -172,11 +172,6 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public Long getWorkCount(Long userId) {
-        return videoMapper.getVideoCount(userId);
-    }
-
-    @Override
     public List<VideoBO> getUserVideos(Long userId) {
         List<Video> videos = videoMapper.getUserVideos(userId);
         return videos.stream()

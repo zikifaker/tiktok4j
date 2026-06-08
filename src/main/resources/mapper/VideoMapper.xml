@@ -9,7 +9,7 @@
         LIMIT #{limit}
     </select>
 
-    <insert id="saveVideo" parameterType="com.github.zikifaker.tiktok4j.entity.Video">
+    <insert id="save" parameterType="com.github.zikifaker.tiktok4j.entity.Video">
         INSERT INTO videos (author_id, source_url, play_url, cover_url, publish_time, title)
         VALUES (#{authorId}, #{sourceURL}, #{playURL}, #{coverURL}, #{publishTime}, #{title})
     </insert>

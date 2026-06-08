@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RocketMQMessageListener(
-        consumerGroup = MQConstants.CG_TOGGLE_LIKE,
-        topic = MQConstants.TOPIC_TOGGLE_LIKE,
+        consumerGroup = MQConstants.CG_TIKTOK_LIKE,
+        topic = MQConstants.TOPIC_TIKTOK_LIKE,
         selectorExpression = MQConstants.TAG_TOGGLE
 )
 public class ToggleLikeConsumer implements RocketMQListener<ToggleLikeMessage> {
@@ -36,11 +36,11 @@ public class ToggleLikeConsumer implements RocketMQListener<ToggleLikeMessage> {
             Integer cancel = LikeActionType.LIKE.name().equals(message.getActionType()) ? 0 : 1;
             likeMapper.upsertLike(message.getUserId(), message.getVideoId(), cancel);
         } catch (Exception e) {
-            log.error("Failed to consume toggle like message: userId={}, videoId={}, action={}",
+            log.error("Failed to consume toggle like message: userId={}, videoId={}, action={}, error={}",
                     message.getUserId(),
                     message.getVideoId(),
                     message.getActionType(),
-                    e
+                    e.getMessage()
             );
         }
     }

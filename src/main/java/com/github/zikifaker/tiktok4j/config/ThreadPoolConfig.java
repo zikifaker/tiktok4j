@@ -25,4 +25,16 @@ public class ThreadPoolConfig {
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
+
+    @Bean("commentTaskExecutor")
+    public Executor commentTaskExecutor() {
+        return new ThreadPoolExecutor(
+                CPU_CORES * 2,
+                CPU_CORES * 3,
+                60L,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(VIDEO_TASK_QUEUE_SIZE),
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
+    }
 }

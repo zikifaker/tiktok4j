@@ -4,10 +4,10 @@ import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.config.JWTConfig;
 import com.github.zikifaker.tiktok4j.entity.User;
 import com.github.zikifaker.tiktok4j.mapper.UserMapper;
+import com.github.zikifaker.tiktok4j.mapper.VideoMapper;
 import com.github.zikifaker.tiktok4j.service.FollowService;
 import com.github.zikifaker.tiktok4j.service.LikeService;
 import com.github.zikifaker.tiktok4j.service.UserService;
-import com.github.zikifaker.tiktok4j.service.VideoService;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private FollowService followService;
 
-    private VideoService videoService;
+    private VideoMapper videoMapper;
 
     private LikeService likeService;
 
@@ -34,13 +34,13 @@ public class UserServiceImpl implements UserService {
             UserMapper userMapper,
             JWTConfig jwtConfig,
             FollowService followService,
-            VideoService videoService,
+            VideoMapper videoMapper,
             LikeService likeService
     ) {
         this.userMapper = userMapper;
         this.jwtConfig = jwtConfig;
         this.followService = followService;
-        this.videoService = videoService;
+        this.videoMapper = videoMapper;
         this.likeService = likeService;
     }
 
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
                 .followeeCount(followService.getFolloweeCount(targetUserId))
                 .followerCount(followService.getFollowerCount(targetUserId))
                 .isFollowed(followService.isFollowed(currentUserId, targetUserId))
-                .workCount(videoService.getWorkCount(targetUserId))
+                .workCount(videoMapper.getVideoCount(targetUserId))
                 .likeCount(likeService.getUserTotalLikeCount(targetUserId))
                 .build();
     }

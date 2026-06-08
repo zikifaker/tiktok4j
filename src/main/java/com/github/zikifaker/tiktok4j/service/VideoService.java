@@ -11,8 +11,6 @@ public interface VideoService {
 
     void publishVideo(PublishVideoBO publishVideoBO);
 
-    Long getWorkCount(Long userId);
-
     List<VideoBO> getUserVideos(Long userId);
 
     List<VideoBO> getUserLikeVideos(Long currentUserId, Long targetUserId);
