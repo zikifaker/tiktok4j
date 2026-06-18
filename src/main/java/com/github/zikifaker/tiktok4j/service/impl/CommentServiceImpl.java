@@ -1,5 +1,6 @@
 package com.github.zikifaker.tiktok4j.service.impl;
 
+import com.github.zikifaker.tiktok4j.bo.GetCommentListBO;
 import com.github.zikifaker.tiktok4j.bo.HandleCommentBO;
 import com.github.zikifaker.tiktok4j.bo.HandleCommentResultBO;
 import com.github.zikifaker.tiktok4j.consts.MQConstants;
@@ -133,7 +134,7 @@ public class CommentServiceImpl implements CommentService {
     private void sendDeleteMessage(Long commentId) {
         DeleteCommentMessage message = new DeleteCommentMessage(commentId);
         String destination = String.format("%s:%s", MQConstants.TOPIC_TIKTOK_COMMENT, MQConstants.TAG_DELETE);
-        mqService.asyncSend(destination, message, new SendCallback(){
+        mqService.asyncSend(destination, message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
                 log.info("Sent delete comment message: commentId={}", commentId);
@@ -144,5 +145,34 @@ public class CommentServiceImpl implements CommentService {
                 log.error("Failed to send delete comment message: commentId={}, error={}", commentId, e.getMessage());
             }
         });
+    }
+
+    @Override
+    public List<GetCommentListBO> getCommentList(Long videoId, Long userId) {
+        List<Comment> comments = commentMapper.getCommentsByVideoId(videoId);
+
+        // 异步组装 BO
+        List<GetCommentListBO> commentList = comments.stream()
+                .map(comment -> GetCommentListBO.builder()
+                        .id(comment.getId())
+                        .userInfo(userService.getUserInfo(userId, comment.getUserId()))
+                        .content(comment.getContent())
+                        .createTime(comment.getCreateTime())
+                        .build())
+                .toList();
+
+        // 异步维护视频的评论 id 集合缓存
+        if (!comments.isEmpty()) {
+            CompletableFuture.runAsync(() -> {
+                String key = String.format(RedisKeys.VIDEO_COMMENTS, videoId);
+                String[] ids = comments.stream()
+                        .map(comment -> String.valueOf(comment.getId()))
+                        .toArray(String[]::new);
+                cacheService.opsForSet().add(key, ids);
+                cacheService.expire(key, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            }, threadPool);
+        }
+
+        return commentList;
     }
 }

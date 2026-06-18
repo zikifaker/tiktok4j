@@ -19,7 +19,8 @@ public enum BaseResponse {
     TOGGLE_LIKE_ERROR(400, "Toggle like error"),
     GET_LIKE_LIST_ERROR(401, "Get like list error"),
 
-    HANDLE_COMMENT_ERROR(500, "Handle comment error");
+    HANDLE_COMMENT_ERROR(500, "Handle comment error"),
+    GET_COMMENT_LIST_ERROR(501, "Get comment list error");
 
     private final Integer code;
     private final String message;
