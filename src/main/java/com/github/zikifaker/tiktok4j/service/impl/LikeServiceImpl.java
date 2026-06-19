@@ -186,7 +186,8 @@ public class LikeServiceImpl implements LikeService {
                 videoId,
                 actionType.name()
         );
-        String destination = String.format("%s:%s", MQConstants.TOPIC_TIKTOK_LIKE, MQConstants.TAG_TOGGLE);
+        String tag = (actionType == LikeActionType.LIKE) ? MQConstants.TAG_LIKE : MQConstants.TAG_UNLIKE;
+        String destination = String.format("%s:%s", MQConstants.TOPIC_TIKTOK_LIKE, tag);
         mqService.asyncSend(destination, message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {

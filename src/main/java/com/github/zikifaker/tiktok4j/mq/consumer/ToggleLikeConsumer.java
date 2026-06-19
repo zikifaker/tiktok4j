@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RocketMQMessageListener(
         consumerGroup = MQConstants.CG_TIKTOK_LIKE,
         topic = MQConstants.TOPIC_TIKTOK_LIKE,
-        selectorExpression = MQConstants.TAG_TOGGLE
+        selectorExpression = MQConstants.TAG_LIKE + " || " + MQConstants.TAG_UNLIKE
 )
 public class ToggleLikeConsumer implements RocketMQListener<ToggleLikeMessage> {
     private LikeMapper likeMapper;
