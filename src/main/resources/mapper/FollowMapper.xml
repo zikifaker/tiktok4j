@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.zikifaker.tiktok4j.mapper.FollowMapper">
+    <update id="follow" statementType="CALLABLE">
+        {CALL follow(#{followerId}, #{followeeId})}
+    </update>
+
+    <update id="unfollow" statementType="CALLABLE">
+        {CALL unfollow(#{followerId}, #{followeeId})}
+    </update>
+</mapper>
