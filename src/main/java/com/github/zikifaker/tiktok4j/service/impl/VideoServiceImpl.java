@@ -190,9 +190,6 @@ public class VideoServiceImpl implements VideoService {
             videoIdStrs = cacheService.opsForSet().members(userLikeVideosKey);
         } else {
             List<Long> videoIds = likeMapper.getLikeVideoIds(targetUserId);
-            if (videoIds.isEmpty()) {
-                return List.of();
-            }
             String[] ids = videoIds.stream()
                     .map(String::valueOf)
                     .toArray(String[]::new);

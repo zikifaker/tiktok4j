@@ -73,13 +73,11 @@ public class CommentServiceImpl implements CommentService {
         }
 
         List<Long> commentIds = commentMapper.getCommentIds(videoId);
-        if (!commentIds.isEmpty()) {
-            String[] ids = commentIds.stream()
-                    .map(String::valueOf)
-                    .toArray(String[]::new);
-            cacheService.expire(key, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-            cacheService.opsForSet().add(key, ids);
-        }
+        String[] ids = commentIds.stream()
+                .map(String::valueOf)
+                .toArray(String[]::new);
+        cacheService.expire(key, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+        cacheService.opsForSet().add(key, ids);
 
         Long count = cacheService.opsForSet().size(key);
         return count != null ? count : 0L;
@@ -106,9 +104,18 @@ public class CommentServiceImpl implements CommentService {
         commentMapper.save(comment);
 
         // 异步维护视频评论 id 缓存
-        CompletableFuture<Void> commentFuture = CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             String videoCommentsKey = String.format(RedisKeys.VIDEO_COMMENTS, handleCommentBO.getVideoId());
-            cacheService.opsForSet().add(videoCommentsKey, String.valueOf(comment.getId()));
+            if (Boolean.TRUE.equals(cacheService.hasKey(videoCommentsKey))) {
+                cacheService.opsForSet().add(videoCommentsKey, String.valueOf(comment.getId()));
+            } else {
+                List<Long> commentIds = commentMapper.getCommentIds(handleCommentBO.getVideoId());
+                String[] ids = commentIds.stream()
+                        .map(String::valueOf)
+                        .toArray(String[]::new);
+                cacheService.expire(videoCommentsKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+                cacheService.opsForSet().add(videoCommentsKey, ids);
+            }
         }, threadPool);
 
         return HandleCommentResultBO.builder()

@@ -50,13 +50,11 @@ public class LikeServiceImpl implements LikeService {
         }
 
         List<Long> userIds = likeMapper.getLikeUserIds(videoId);
-        if (!userIds.isEmpty()) {
-            String[] ids = userIds.stream()
-                    .map(String::valueOf)
-                    .toArray(String[]::new);
-            cacheService.expire(key, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-            cacheService.opsForSet().add(key, ids);
-        }
+        String[] ids = userIds.stream()
+                .map(String::valueOf)
+                .toArray(String[]::new);
+        cacheService.expire(key, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+        cacheService.opsForSet().add(key, ids);
 
         Long count = cacheService.opsForSet().size(key);
         return count != null ? count : 0L;
@@ -82,13 +80,11 @@ public class LikeServiceImpl implements LikeService {
 
         // 从数据库查询用户点赞的视频 id，并加载到缓存
         List<Long> videoIds = likeMapper.getLikeVideoIds(userId);
-        if (!videoIds.isEmpty()) {
-            String[] ids = videoIds.stream()
-                    .map(String::valueOf)
-                    .toArray(String[]::new);
-            cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-            cacheService.opsForSet().add(userLikeVideosKey, ids);
-        }
+        String[] ids = videoIds.stream()
+                .map(String::valueOf)
+                .toArray(String[]::new);
+        cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+        cacheService.opsForSet().add(userLikeVideosKey, ids);
 
         Boolean isMember = cacheService.opsForSet().isMember(userLikeVideosKey, String.valueOf(videoId));
         return Boolean.TRUE.equals(isMember);
@@ -114,13 +110,11 @@ public class LikeServiceImpl implements LikeService {
             cacheService.opsForSet().add(userLikeVideosKey, String.valueOf(videoId));
         } else {
             List<Long> videoIds = likeMapper.getLikeVideoIds(userId);
-            if (!videoIds.isEmpty()) {
-                String[] ids = Stream
-                        .concat(videoIds.stream().map(String::valueOf), Stream.of(String.valueOf(videoId)))
-                        .toArray(String[]::new);
-                cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-                cacheService.opsForSet().add(userLikeVideosKey, ids);
-            }
+            String[] ids = Stream
+                    .concat(videoIds.stream().map(String::valueOf), Stream.of(String.valueOf(videoId)))
+                    .toArray(String[]::new);
+            cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(userLikeVideosKey, ids);
         }
 
         // 维护点赞视频的用户 id
@@ -129,13 +123,11 @@ public class LikeServiceImpl implements LikeService {
             cacheService.opsForSet().add(likeVideoUsersKey, String.valueOf(userId));
         } else {
             List<Long> userIds = likeMapper.getLikeUserIds(videoId);
-            if (!userIds.isEmpty()) {
-                String[] ids = Stream
-                        .concat(userIds.stream().map(String::valueOf), Stream.of(String.valueOf(userId)))
-                        .toArray(String[]::new);
-                cacheService.expire(likeVideoUsersKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-                cacheService.opsForSet().add(likeVideoUsersKey, ids);
-            }
+            String[] ids = Stream
+                    .concat(userIds.stream().map(String::valueOf), Stream.of(String.valueOf(userId)))
+                    .toArray(String[]::new);
+            cacheService.expire(likeVideoUsersKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(likeVideoUsersKey, ids);
         }
 
         // 向 MQ 发送消息
@@ -148,14 +140,12 @@ public class LikeServiceImpl implements LikeService {
             cacheService.opsForSet().remove(userLikeVideosKey, String.valueOf(videoId));
         } else {
             List<Long> videoIds = likeMapper.getLikeVideoIds(userId);
-            if (!videoIds.isEmpty()) {
-                String[] ids = videoIds.stream()
-                        .filter(id -> !id.equals(videoId))
-                        .map(String::valueOf)
-                        .toArray(String[]::new);
-                cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-                cacheService.opsForSet().add(userLikeVideosKey, ids);
-            }
+            String[] ids = videoIds.stream()
+                    .filter(id -> !id.equals(videoId))
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            cacheService.expire(userLikeVideosKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(userLikeVideosKey, ids);
         }
 
         String likeVideoUsersKey = String.format(RedisKeys.LIKE_VIDEO_USERS, videoId);
@@ -163,14 +153,12 @@ public class LikeServiceImpl implements LikeService {
             cacheService.opsForSet().remove(likeVideoUsersKey, String.valueOf(userId));
         } else {
             List<Long> userIds = likeMapper.getLikeUserIds(videoId);
-            if (!userIds.isEmpty()) {
-                String[] ids = userIds.stream()
-                        .filter(id -> !id.equals(userId))
-                        .map(String::valueOf)
-                        .toArray(String[]::new);
-                cacheService.expire(likeVideoUsersKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-                cacheService.opsForSet().add(likeVideoUsersKey, ids);
-            }
+            String[] ids = userIds.stream()
+                    .filter(id -> !id.equals(userId))
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            cacheService.expire(likeVideoUsersKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(likeVideoUsersKey, ids);
         }
 
         sendToggleLikeMessage(userId, videoId, LikeActionType.UNLIKE);
