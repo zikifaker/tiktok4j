@@ -1,13 +1,18 @@
-package com.github.zikifaker.tiktok4j.dto.resp;
+package com.github.zikifaker.tiktok4j.dto.resp.like;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.github.zikifaker.tiktok4j.bo.VideoBO;
 import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
-public class PublishResp {
+public class GetLikeListResp {
     @JsonUnwrapped
     private BaseResponse resp;
+
+    private List<VideoBO> videos;
 }

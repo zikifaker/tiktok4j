@@ -1,16 +1,13 @@
-package com.github.zikifaker.tiktok4j.dto.resp;
+package com.github.zikifaker.tiktok4j.dto.resp.follow;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.github.zikifaker.tiktok4j.bo.HandleCommentResultBO;
 import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class HandleCommentResp {
+public class ToggleFollowResp {
     @JsonUnwrapped
     private BaseResponse resp;
-
-    private HandleCommentResultBO comment;
 }
