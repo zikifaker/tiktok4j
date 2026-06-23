@@ -1,11 +1,13 @@
 package com.github.zikifaker.tiktok4j.service.impl;
 
+import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.enums.FollowActionType;
 import com.github.zikifaker.tiktok4j.consts.MQConstants;
 import com.github.zikifaker.tiktok4j.consts.RedisKeys;
 import com.github.zikifaker.tiktok4j.mapper.FollowMapper;
 import com.github.zikifaker.tiktok4j.mq.message.ToggleFollowMessage;
 import com.github.zikifaker.tiktok4j.service.FollowService;
+import com.github.zikifaker.tiktok4j.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -15,7 +17,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -25,6 +29,8 @@ public class FollowServiceImpl implements FollowService {
 
     private RocketMQTemplate mqService;
 
+    private UserService userService;
+
     private FollowMapper followMapper;
 
     private static final int CACHE_EXPIRE_DAYS = 30;
@@ -33,26 +39,13 @@ public class FollowServiceImpl implements FollowService {
     public FollowServiceImpl(
             StringRedisTemplate cacheService,
             RocketMQTemplate mqService,
+            UserService userService,
             FollowMapper followMapper
     ) {
         this.cacheService = cacheService;
         this.mqService = mqService;
+        this.userService = userService;
         this.followMapper = followMapper;
-    }
-
-    @Override
-    public Long getFolloweeCount(Long followerId) {
-        return followMapper.getFolloweeCount(followerId);
-    }
-
-    @Override
-    public Long getFollowerCount(Long followedId) {
-        return followMapper.getFollowerCount(followedId);
-    }
-
-    @Override
-    public Boolean isFollowed(Long currentUserId, Long targetUserId) {
-        return followMapper.isFollowed(currentUserId, targetUserId);
     }
 
     @Override
@@ -156,5 +149,29 @@ public class FollowServiceImpl implements FollowService {
                 );
             }
         });
+    }
+
+    @Override
+    public List<UserInfoBO> getFollowers(Long currentUserId, Long targetUserId) {
+        String userFollowersKey = String.format(RedisKeys.USER_FOLLOWERS, targetUserId);
+        Boolean exists = cacheService.hasKey(userFollowersKey);
+        Set<String> result;
+
+        if (Boolean.TRUE.equals(exists)) {
+            result = cacheService.opsForSet().members(userFollowersKey);
+        } else {
+            List<Long> followerIds = followMapper.getFollowerIds(targetUserId);
+            String[] ids = followerIds.stream()
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            cacheService.expire(userFollowersKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(userFollowersKey, ids);
+            result = Set.of(ids);
+        }
+
+        return result.stream()
+                .map(Long::valueOf)
+                .map(followerId -> userService.getUserInfo(currentUserId, followerId))
+                .collect(Collectors.toList());
     }
 }

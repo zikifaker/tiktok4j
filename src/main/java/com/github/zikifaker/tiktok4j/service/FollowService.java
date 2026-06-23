@@ -1,13 +1,12 @@
 package com.github.zikifaker.tiktok4j.service;
 
+import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.enums.FollowActionType;
 
+import java.util.List;
+
 public interface FollowService {
-    Long getFolloweeCount(Long followerId);
-
-    Long getFollowerCount(Long followeeId);
-
-    Boolean isFollowed(Long currentUserId, Long targetUserId);
-
     void toggleFollow(Long currentUserId, Long targetUserId, FollowActionType actionType);
+
+    List<UserInfoBO> getFollowers(Long currentUserId, Long targetUserId);
 }

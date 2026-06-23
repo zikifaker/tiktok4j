@@ -1,7 +1,9 @@
 package com.github.zikifaker.tiktok4j.controller;
 
+import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.consts.ContextKeys;
-import com.github.zikifaker.tiktok4j.dto.resp.ToggleFollowResp;
+import com.github.zikifaker.tiktok4j.dto.resp.follow.GetFollowerList;
+import com.github.zikifaker.tiktok4j.dto.resp.follow.ToggleFollowResp;
 import com.github.zikifaker.tiktok4j.enums.BaseResponse;
 import com.github.zikifaker.tiktok4j.enums.FollowActionType;
 import com.github.zikifaker.tiktok4j.service.FollowService;
@@ -10,10 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -45,6 +46,29 @@ public class FollowController {
             log.error("Error toggling follow: {}", e.getMessage());
             ToggleFollowResp respBody = ToggleFollowResp.builder()
                     .resp(BaseResponse.TOGGLE_FOLLOW_ERROR)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(respBody);
+        }
+    }
+
+    @GetMapping("/follow/list")
+    public ResponseEntity<GetFollowerList> getFollowerList(@RequestParam("user_id") Long userId, HttpServletRequest request) {
+        Long currentUserId = (Long) request.getAttribute(ContextKeys.USER_ID);
+        try {
+            List<UserInfoBO> followers = followService.getFollowers(currentUserId, userId);
+            GetFollowerList respBody = GetFollowerList.builder()
+                    .resp(BaseResponse.SUCCESS)
+                    .userList(followers)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(respBody);
+        } catch (Exception e) {
+            log.error("Error getting follower list: {}", e.getMessage());
+            GetFollowerList respBody = GetFollowerList.builder()
+                    .resp(BaseResponse.GET_FOLLOWER_LIST_ERROR)
                     .build();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

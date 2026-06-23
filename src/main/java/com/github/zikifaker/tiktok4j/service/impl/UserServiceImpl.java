@@ -3,9 +3,9 @@ package com.github.zikifaker.tiktok4j.service.impl;
 import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.config.JWTConfig;
 import com.github.zikifaker.tiktok4j.entity.User;
+import com.github.zikifaker.tiktok4j.mapper.FollowMapper;
 import com.github.zikifaker.tiktok4j.mapper.UserMapper;
 import com.github.zikifaker.tiktok4j.mapper.VideoMapper;
-import com.github.zikifaker.tiktok4j.service.FollowService;
 import com.github.zikifaker.tiktok4j.service.LikeService;
 import com.github.zikifaker.tiktok4j.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private JWTConfig jwtConfig;
 
-    private FollowService followService;
+    private FollowMapper followMapper;
 
     private VideoMapper videoMapper;
 
@@ -33,13 +33,13 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(
             UserMapper userMapper,
             JWTConfig jwtConfig,
-            FollowService followService,
+            FollowMapper followMapper,
             VideoMapper videoMapper,
             LikeService likeService
     ) {
         this.userMapper = userMapper;
         this.jwtConfig = jwtConfig;
-        this.followService = followService;
+        this.followMapper = followMapper;
         this.videoMapper = videoMapper;
         this.likeService = likeService;
     }
@@ -85,9 +85,9 @@ public class UserServiceImpl implements UserService {
         return UserInfoBO.builder()
                 .userId(targetUserId)
                 .username(targetUser.getUsername())
-                .followeeCount(followService.getFolloweeCount(targetUserId))
-                .followerCount(followService.getFollowerCount(targetUserId))
-                .isFollowed(followService.isFollowed(currentUserId, targetUserId))
+                .followeeCount(followMapper.getFolloweeCount(targetUserId))
+                .followerCount(followMapper.getFollowerCount(targetUserId))
+                .isFollowed(followMapper.isFollowed(currentUserId, targetUserId))
                 .workCount(videoMapper.getVideoCount(targetUserId))
                 .likeCount(likeService.getUserTotalLikeCount(targetUserId))
                 .build();
