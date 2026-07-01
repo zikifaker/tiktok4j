@@ -2,10 +2,9 @@
 
 ## 介绍
 
-使用 Java 重写字节青训营项目 TikTok，参考[抖音简洁版](https://github.com/HammerCloth/tiktok)
-和[ API 文档](https://s.apifox.cn/7b33652d-6080-41bb-a70e-7a165d55daae/api-63184486)实现。
+使用 Java 重写字节青训营项目 TikTok，参考[抖音简洁版](https://github.com/HammerCloth/tiktok)和[ API 文档](https://s.apifox.cn/7b33652d-6080-41bb-a70e-7a165d55daae/api-63184486)实现。
 
-## feat
+## 功能
 
 - 基础接口
     - 视频流
