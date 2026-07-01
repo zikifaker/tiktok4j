@@ -152,6 +152,30 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
+    public List<UserInfoBO> getFollowees(Long currentUserId, Long targetUserId) {
+        String userFolloweesKey = String.format(RedisKeys.USER_FOLLOWEES, targetUserId);
+        Boolean exists = cacheService.hasKey(userFolloweesKey);
+        Set<String> result;
+
+        if (Boolean.TRUE.equals(exists)) {
+            result = cacheService.opsForSet().members(userFolloweesKey);
+        } else {
+            List<Long> followeeIds = followMapper.getFolloweeIds(targetUserId);
+            String[] ids = followeeIds.stream()
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
+            cacheService.expire(userFolloweesKey, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
+            cacheService.opsForSet().add(userFolloweesKey, ids);
+            result = Set.of(ids);
+        }
+
+        return result.stream()
+                .map(Long::valueOf)
+                .map(followeeId -> userService.getUserInfo(currentUserId, followeeId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<UserInfoBO> getFollowers(Long currentUserId, Long targetUserId) {
         String userFollowersKey = String.format(RedisKeys.USER_FOLLOWERS, targetUserId);
         Boolean exists = cacheService.hasKey(userFollowersKey);

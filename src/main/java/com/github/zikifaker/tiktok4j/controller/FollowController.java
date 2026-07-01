@@ -2,6 +2,7 @@ package com.github.zikifaker.tiktok4j.controller;
 
 import com.github.zikifaker.tiktok4j.bo.UserInfoBO;
 import com.github.zikifaker.tiktok4j.consts.ContextKeys;
+import com.github.zikifaker.tiktok4j.dto.resp.follow.GetFolloweeList;
 import com.github.zikifaker.tiktok4j.dto.resp.follow.GetFollowerList;
 import com.github.zikifaker.tiktok4j.dto.resp.follow.ToggleFollowResp;
 import com.github.zikifaker.tiktok4j.enums.BaseResponse;
@@ -53,7 +54,30 @@ public class FollowController {
         }
     }
 
-    @GetMapping("/follow/list")
+    @GetMapping("/followee/list")
+    public ResponseEntity<GetFolloweeList> getFolloweeList(@RequestParam("user_id") Long userId, HttpServletRequest request) {
+        Long currentUserId = (Long) request.getAttribute(ContextKeys.USER_ID);
+        try {
+            List<UserInfoBO> followees = followService.getFollowees(currentUserId, userId);
+            GetFolloweeList respBody = GetFolloweeList.builder()
+                    .resp(BaseResponse.SUCCESS)
+                    .userList(followees)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(respBody);
+        } catch (Exception e) {
+            log.error("Error getting followee list: {}", e.getMessage());
+            GetFolloweeList respBody = GetFolloweeList.builder()
+                    .resp(BaseResponse.GET_FOLLOWEE_LIST_ERROR)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(respBody);
+        }
+    }
+
+    @GetMapping("/follower/list")
     public ResponseEntity<GetFollowerList> getFollowerList(@RequestParam("user_id") Long userId, HttpServletRequest request) {
         Long currentUserId = (Long) request.getAttribute(ContextKeys.USER_ID);
         try {

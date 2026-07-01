@@ -23,7 +23,8 @@ public enum BaseResponse {
     GET_COMMENT_LIST_ERROR(501, "Get comment list error"),
 
     TOGGLE_FOLLOW_ERROR(600, "Toggle follow error"),
-    GET_FOLLOWER_LIST_ERROR(601, "Get follower list error");
+    GET_FOLLOWEE_LIST_ERROR(601, "Get followee list error"),
+    GET_FOLLOWER_LIST_ERROR(602, "Get follower list error");
 
     private final Integer code;
     private final String message;

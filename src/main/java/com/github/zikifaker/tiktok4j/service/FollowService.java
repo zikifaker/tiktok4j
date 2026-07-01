@@ -8,5 +8,7 @@ import java.util.List;
 public interface FollowService {
     void toggleFollow(Long currentUserId, Long targetUserId, FollowActionType actionType);
 
+    List<UserInfoBO> getFollowees(Long currentUserId, Long targetUserId);
+
     List<UserInfoBO> getFollowers(Long currentUserId, Long targetUserId);
 }
